@@ -1,65 +1,45 @@
-from rest_framework.views import APIView
+from rest_framework import serializers, viewsets
+from rest_framework.decorators import action
+from .models import Stock
+from .serializers import StockSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
-from .models import TradeData
-from .serializers import TradeDataSerializer
-from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
-# Create your views here.
-class TradeDataView(APIView):
+# ViewSet for Stock CRUD operations
+class StockViewSet(viewsets.ModelViewSet):
+    queryset = Stock.objects.all()
+    serializer_class = StockSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['trade_code', 'date']
+    pagination_class = PageNumberPagination
 
-    def get(self, request, pk=None):
-        if pk:
-            # Fetch trade data for a specific trade ID
-            trade_data = TradeData.objects.filter(pk=pk).first()
-            if not trade_data:
-                return Response({"message": "Trade data not found."})
-            serializer = TradeDataSerializer(trade_data)
-            return Response(serializer.data)
+    @action(detail=False, methods=['get'])
+    def chart_data(self, request):
+        trade_code = request.query_params.get('trade_code', None)
+        if trade_code:
+            stocks = Stock.objects.filter(trade_code=trade_code).order_by('date')
         else:
-            # Fetch all trade data
-            trade_data = TradeData.objects.all()
-            serializer = TradeDataSerializer(trade_data, many=True)
-            return Response(serializer.data)
+            return Response(
+                status=400,
+                data={
+                    'error': 'Trade code not provided.'
+                }
+            )
         
+        data = []
+        for stock in stocks:
+            data.append({
+                'date': stock.date.strftime('%Y-%m-%d'),
+                'close': stock.close,
+                'volume': stock.volume,
+            })
+        return Response(data)
     
-    def post(request):
-        # Create a new trade data
-        print(request.data)
-        print(type(request.data))
-        serializer = TradeDataSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    
-    def put(self, request, pk=None):
-        # Update trade data for a specific trade ID
-        trade_data = TradeData.objects.filter(pk=pk).first()
-        if not trade_data:
-            return Response({"message": "Trade data not found."})
-        serializer = TradeDataSerializer(trade_data, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        
-    def delete(self, request, pk=None):
-        if pk:
-            # Delete trade data for a specific trade ID
-            trade_data = TradeData.objects.filter(pk=pk).first()
-            if not trade_data:
-                return Response({"message": "Trade data not found."})
-            trade_data.delete()
-            return Response({"message": "Trade data deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({"message": "Invalid trade ID."})
-            
-
-        
-
-
-            
+    @action(detail=False, methods=['get'], url_path='unique-trade-codes')
+    def unique_trade_codes(self, request):
+        """
+        Returns a list of unique trade codes available in the database.
+        """
+        trade_codes = Stock.objects.values_list('trade_code', flat=True).distinct()
+        return Response(list(trade_codes))

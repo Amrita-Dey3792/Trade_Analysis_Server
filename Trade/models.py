@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class TradeData(models.Model):
+class Stock(models.Model):
     date = models.DateField()
     trade_code = models.CharField(max_length=20)
     high = models.DecimalField(max_digits=10, decimal_places=2)
