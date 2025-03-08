@@ -16,7 +16,7 @@ with open('stock_market_data.json', 'r') as file:
 
     for index, item in enumerate(data):
         trade_data.append({
-            "model": "Trade.tradedata",
+            "model": "Trade.stock",
             "pk": index + 1,
             "fields": {
                 "date": item["date"],
@@ -29,7 +29,7 @@ with open('stock_market_data.json', 'r') as file:
             }
         })
 
-with open("./Trade/fixtures/trade_data.json", "w") as json_file:
+with open("./Trade/fixtures/stocks.json", "w") as json_file:
     json.dump(trade_data, json_file, indent=4)
 
 print("Data has been transformed and saved.")

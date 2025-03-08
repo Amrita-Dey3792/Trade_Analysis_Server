@@ -8,7 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 
 # ViewSet for Stock CRUD operations
 class StockViewSet(viewsets.ModelViewSet):
-    queryset = Stock.objects.all()
+    queryset = Stock.objects.all().order_by('-id')
     serializer_class = StockSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['trade_code', 'date']
