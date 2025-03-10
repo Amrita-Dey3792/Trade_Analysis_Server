@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-x&6j7uo25n6^)fcbnrr5(!t&#s!5d=ff7g--2892g-ya*kzlo3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'thriving-pastelito-66f77b.netlify.app',
+]
 
 
 # Application definition
