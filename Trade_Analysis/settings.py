@@ -56,7 +56,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173"
+    "https://thriving-pastelito-66f77b.netlify.app"
 ]
 
 ROOT_URLCONF = 'Trade_Analysis.urls'
