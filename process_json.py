@@ -33,3 +33,5 @@ with open("./Trade/fixtures/stocks.json", "w") as json_file:
     json.dump(trade_data, json_file, indent=4)
 
 print("Data has been transformed and saved.")
+
+
