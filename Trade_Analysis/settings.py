@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'thriving-pastelito-66f77b.netlify.app',
+    'trade-analysis-server.onrender.com',
 ]
 
 
